@@ -1,0 +1,3 @@
+TXT | Linha | Par | Imaginária | Real | Amplitude
+csi_data_1724809062.txt | 1 | 20 | -25 | 14 | 28,65
+(participante s19, atividade FA, ordem_selecao=1; Imaginária = coluna 40 do TXT, Real = coluna 41, Amplitude = coluna 20 da matriz)

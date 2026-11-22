@@ -1,0 +1,42 @@
+# Base de dados original (não versionar)
+/Embedded_WiFi_Sensing-main/
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+.env/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+
+# Binários e compactados
+*.zip
+*.7z
+*.rar
+*.tar
+*.gz
+*.exe
+*.dll
+*.so
+*.dylib
+*.o
+*.obj
+*.lib
+*.a
+*.bin
+*.whl
+*.egg
+*.egg-info/
+build/
+dist/
+
+# Modelos e matrizes binárias
+*.keras
+*.h5
+*.tflite
+*.npy

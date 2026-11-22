@@ -1,0 +1,139 @@
+TRABALHO FINAL - PARTE 1 - SEÇÕES 1, 2 E 3
+Equipe 14 - Stephany Castro da Silva; Lahis Gomes de Almeida
+Participantes da base: s19, s21 e s22
+
+======================================================================
+1. O QUE ESTA PASTA CONTÉM
+======================================================================
+  config.py                  configuração: caminho da base e ID da equipe (ÚNICO arquivo a editar)
+  comum.py                   funções compartilhadas: leitura dos TXT e cálculo das amplitudes
+  secao1_inventario.py       seção 1 - inventário das 1647 gravações e tabela de contagens
+  secao2_selecao.py          seção 2 - seleção das 30 gravações da equipe
+  secao3_amplitudes.py       seção 3 - amplitudes, tabela de verificação e 5 painéis (30 gráficos)
+  executar_secoes_1a3.py     roda as seções 1, 2 e 3 em ordem e confere os entregáveis
+  gerar_relatorio_pdf.py     (opcional) converte relatorio.md em relatorio.pdf
+  requirements.txt           bibliotecas necessárias, com as versões exatas
+  relatorio.md / relatorio.pdf   relatório das seções 1 a 3 (tabelas, figuras e interpretações)
+  resultados/                arquivos gerados pelo código (ver item 7)
+
+======================================================================
+2. VERSÕES UTILIZADAS
+======================================================================
+  Python      3.15.2 (testado nesta versão; 3.11 ou mais recente deve funcionar)
+  numpy       2.5.5
+  matplotlib  3.11.2
+  markdown    3.11.3   (somente para a etapa opcional de gerar o PDF)
+  A seção 1 usa apenas a biblioteca padrão do Python.
+  Para gerar o PDF também é preciso ter o Microsoft Edge ou o Google Chrome instalado.
+
+======================================================================
+3. PRÉ-REQUISITOS
+======================================================================
+  a) Python instalado. Para conferir, num terminal:
+         python --version
+     No Windows, se aparecer "Python was not found", o Python não está no PATH.
+     Use o caminho completo do executável. Se o Python foi instalado com o uv, por exemplo:
+         C:\Users\<usuario>\.local\bin\python3.15.exe --version
+     Nesse caso, troque "python" por esse caminho no passo 5a abaixo.
+
+  b) A base descompactada. A pasta raiz é a que contém Datasets\ e Scripts\, por exemplo:
+         ...\Embedded_WiFi_Sensing-main\Datasets\Activity\FA\s1\csi_data_1720464506.txt
+     Atenção: o ZIP original cria uma pasta dentro de outra
+     (Embedded_WiFi_Sensing-main\Embedded_WiFi_Sensing-main). Use a mais interna, a que tem Datasets\.
+
+======================================================================
+4. CONFIGURAÇÃO (arquivo config.py)
+======================================================================
+  Abra config.py num editor de texto e ajuste as duas linhas abaixo:
+
+    RAIZ_BASE = Path(os.environ.get(
+        "RAIZ_BASE_CSI",
+        r"C:\caminho\para\Embedded_WiFi_Sensing-main"))    <- caminho da pasta raiz da base
+
+    ID_EQUIPE = 14                                          <- ID da equipe (tabela 2.2 do enunciado)
+
+  Os participantes são escolhidos automaticamente pelo ID (14 -> s19, s21, s22),
+  conforme a tabela PARTICIPANTES_POR_EQUIPE do próprio config.py.
+
+  Alternativa sem editar o arquivo: defina a variável de ambiente RAIZ_BASE_CSI antes de executar.
+      PowerShell:  $env:RAIZ_BASE_CSI = "C:\caminho\para\Embedded_WiFi_Sensing-main"
+      cmd:         set RAIZ_BASE_CSI=C:\caminho\para\Embedded_WiFi_Sensing-main
+      Linux/macOS: export RAIZ_BASE_CSI=/caminho/para/Embedded_WiFi_Sensing-main
+
+======================================================================
+5. PASSO A PASSO DE EXECUÇÃO
+======================================================================
+  Abra um terminal (PowerShell, cmd ou terminal do VS Code) DENTRO desta pasta.
+  No VS Code: menu Terminal > Novo Terminal. No Explorador de Arquivos: clique com o botão direito
+  na pasta > "Abrir no Terminal".
+
+  a) Criar um ambiente virtual (uma única vez):
+         python -m venv .venv
+
+  b) Instalar as bibliotecas (uma única vez):
+         Windows:      .venv\Scripts\python.exe -m pip install -r requirements.txt
+         Linux/macOS:  .venv/bin/python -m pip install -r requirements.txt
+
+  c) Executar as seções 1, 2 e 3 (cerca de 30 a 60 segundos):
+         Windows:      .venv\Scripts\python.exe executar_secoes_1a3.py
+         Linux/macOS:  .venv/bin/python executar_secoes_1a3.py
+
+     Ao final, o programa mostra a conferência dos entregáveis. Todos devem aparecer como [OK]:
+         [OK] inventario_gravacoes.csv com 1647 linhas de dados
+         [OK] contagem_gravacoes.csv com 22 participantes + linha Total
+         [OK] selecao_30_gravacoes.csv com 30 linhas de dados
+         [OK] verificacao_amplitude.txt gerado
+         [OK] 5 painéis da seção 3 (30 gráficos)
+
+  d) (Opcional) Gerar o relatorio.pdf a partir do relatorio.md:
+         .venv\Scripts\python.exe -m pip install markdown
+         .venv\Scripts\python.exe gerar_relatorio_pdf.py
+     Esse passo também cria o relatorio.html. Se o Edge ou o Chrome não for encontrado, abra o
+     relatorio.html no navegador e use Imprimir > Salvar como PDF.
+
+  Alternativa ao passo (c): executar uma seção por vez, NESTA ORDEM (cada uma usa o CSV da anterior):
+         .venv\Scripts\python.exe secao1_inventario.py
+         .venv\Scripts\python.exe secao2_selecao.py
+         .venv\Scripts\python.exe secao3_amplitudes.py
+     A seção 1 aceita o caminho da base como argumento, o que dispensa editar o config.py:
+         .venv\Scripts\python.exe secao1_inventario.py "C:\caminho\para\Embedded_WiFi_Sensing-main"
+     (as seções 2 e 3 continuam usando RAIZ_BASE ou RAIZ_BASE_CSI)
+
+  Com ambiente ativado (opcional): .venv\Scripts\activate (Windows) ou source .venv/bin/activate
+  (Linux/macOS). Depois disso, basta digitar "python executar_secoes_1a3.py".
+  No PowerShell, se a ativação for bloqueada, rode antes:
+         Set-ExecutionPolicy -Scope Process Bypass
+
+======================================================================
+6. PROBLEMAS COMUNS
+======================================================================
+  "Base não encontrada em ..."       RAIZ_BASE aponta para a pasta errada (ver itens 3b e 4).
+  "No module named numpy"            o passo 5b não foi feito, ou o comando usou um python
+                                     diferente do .venv. Use .venv\Scripts\python.exe.
+  "FileNotFoundError ... selecao_30_gravacoes.csv"
+                                     a seção 3 foi executada antes da 2. Siga a ordem 1 -> 2 -> 3.
+  Acentos estranhos no terminal do Windows:
+                                     antes de executar, rode $env:PYTHONIOENCODING="utf-8" (PowerShell).
+                                     Os arquivos gerados são UTF-8 e não são afetados.
+
+======================================================================
+7. RESULTADOS (pasta resultados/, criada automaticamente)
+======================================================================
+  Seção 1
+    inventario_gravacoes.csv      uma linha por TXT (1647): atividade, participante, caminho_txt,
+                                  total_registros, registros_formato_valido, problemas_leitura
+    contagem_gravacoes.csv        participantes x atividades (FA, GU, LD, SD, WA), com totais
+    resumo_secao1.txt             comparação com o artigo (1647 gravações / 22 participantes),
+                                  IDs ausentes (s18, s20) e células diferentes de 15
+  Seção 2
+    selecao_30_gravacoes.csv      30 TXT: participante, atividade, caminho_txt, ordem_selecao, n_registros
+    arquivos_desconsiderados.csv  arquivos descartados, motivo e substituto (só cabeçalho = nenhum)
+  Seção 3
+    verificacao_amplitude.txt     tabela de verificação do par 20 (uma linha)
+    estatisticas_secao3.txt       estatísticas de apoio aos comentários (variação por janela, pares)
+    figuras/secao3_painel_1_FA.png ... secao3_painel_5_WA.png
+                                  5 painéis, um por atividade; cada um com 3 séries temporais do
+                                  par 20 e 3 mapas de calor dos 64 pares (30 gráficos no total)
+
+  Os TXT originais da base nunca são alterados. Executar de novo sobrescreve a pasta resultados/
+  com os mesmos valores.

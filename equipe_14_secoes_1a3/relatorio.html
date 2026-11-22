@@ -1,0 +1,501 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório - Equipe 14</title><style>
+@page { size: A4; margin: 16mm 14mm; }
+body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10.5pt; line-height: 1.42; color: #111; }
+h1 { font-size: 18pt; margin-bottom: 4px; } h2 { font-size: 14pt; border-bottom: 1px solid #999;
+padding-bottom: 2px; margin-top: 22px; page-break-after: avoid; } h3 { font-size: 11.5pt; page-break-after: avoid; }
+table { border-collapse: collapse; margin: 8px 0; font-size: 9pt; page-break-inside: avoid; }
+th, td { border: 1px solid #bbb; padding: 2px 6px; } th { background: #eee; }
+img { width: 100%; page-break-inside: avoid; margin: 6px 0; }
+code { font-family: Consolas, monospace; font-size: 9pt; background: #f3f3f3; padding: 0 2px; }
+hr { border: none; border-top: 1px solid #ccc; margin: 18px 0; }
+</style></head><body><h1>Trabalho final — Parte 1: seções 1, 2 e 3</h1>
+<p><strong>Tópicos em Redes Móveis 2026</strong></p>
+<p><strong>Equipe 14:</strong> Stephany Castro da Silva; Lahis Gomes de Almeida</p>
+<p><strong>Participantes da base atribuídos:</strong> s19, s21 e s22</p>
+<h2>Objetivo</h2>
+<p>Organizar e verificar as gravações de CSI de cinco atividades humanas: FA (queda), GU (levantar-se), LD (deitar-se), SD (sentar-se) e WA (caminhar). Em seguida, selecionar as 30 gravações da equipe e calcular e visualizar as amplitudes de CSI. A base vem do repositório <em>Embedded_WiFi_Sensing</em> e do artigo <em>Tools and Methods for Achieving Wi-Fi Sensing in Embedded Devices</em> (Sensors, 2025).</p>
+<p>Todos os resultados foram gerados pelos scripts da equipe:</p>
+<ul>
+<li><code>secao1_inventario.py</code>, <code>secao2_selecao.py</code> e <code>secao3_amplitudes.py</code>, que podem ser executados juntos com <code>executar_secoes_1a3.py</code>;</li>
+<li><code>config.py</code> (configuração) e <code>comum.py</code> (funções compartilhadas).</li>
+</ul>
+<p>As instruções de execução estão em <code>LEIA-ME.txt</code>. Os arquivos gerados ficam em <code>resultados/</code>.</p>
+<hr />
+<h2>1. Organizar e verificar as gravações de atividades</h2>
+<h3>1.1 Organização da base</h3>
+<p>A pasta <code>Datasets/Activity</code> contém cinco subpastas, uma por atividade. Cada atividade tem 22 subpastas de participantes (s1 a s24, sem s18 e s20), e cada subpasta guarda os arquivos <code>csi_data_&lt;timestamp&gt;.txt</code>. Cada arquivo é <strong>uma gravação</strong>. Cada linha é <strong>um registro de CSI</strong>, ou seja, um pacote Wi-Fi recebido, com 129 valores: 1 valor temporal e 64 pares (imaginária, real).</p>
+<h3>1.2 Inventário das gravações (<code>resultados/inventario_gravacoes.csv</code>)</h3>
+<p>O código percorre as cinco atividades e as subpastas de participantes. Ele grava uma linha por TXT com as colunas <code>atividade</code>, <code>participante</code>, <code>caminho_txt</code>, <code>total_registros</code>, <code>registros_formato_valido</code> e <code>problemas_leitura</code>. Exemplo das primeiras linhas:</p>
+<table>
+<thead>
+<tr>
+<th>atividade</th>
+<th>participante</th>
+<th>caminho_txt</th>
+<th>total_registros</th>
+<th>registros_formato_valido</th>
+<th>problemas_leitura</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FA</td>
+<td>s1</td>
+<td>Datasets/Activity/FA/s1/csi_data_1720464506.txt</td>
+<td>994</td>
+<td>994</td>
+<td>nenhum</td>
+</tr>
+<tr>
+<td>FA</td>
+<td>s1</td>
+<td>Datasets/Activity/FA/s1/csi_data_1720464592.txt</td>
+<td>991</td>
+<td>991</td>
+<td>nenhum</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado da verificação:</strong></p>
+<ul>
+<li><strong>TXT inventariados:</strong> 1.647, ou seja, 1.647 linhas de dados no CSV, sem contar o cabeçalho.</li>
+<li><strong>Registros:</strong> 1.623.376 linhas não vazias. Todas têm 129 valores numéricos finitos.</li>
+<li><strong>Problemas:</strong> nenhum arquivo vazio, ilegível ou com linha fora do formato. <code>problemas_leitura = nenhum</code> em todos.</li>
+<li><strong>Registros por gravação:</strong> entre 866 e 1.001. Essa variação é esperada e não é um erro.</li>
+<li><strong>Conferência:</strong> a linha de exemplo do enunciado, <code>FA/s1/csi_data_1720464506.txt</code>, tem 994 registros válidos de 994.</li>
+</ul>
+<h3>1.3 Contagem de gravações por participante e atividade (<code>resultados/contagem_gravacoes.csv</code>)</h3>
+<p>Cada célula informa <strong>quantos arquivos TXT</strong> existem na pasta. Não informa quantos registros há dentro deles.</p>
+<table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>FA</th>
+<th>GU</th>
+<th>LD</th>
+<th>SD</th>
+<th>WA</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>s1</td>
+<td>14</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>74</td>
+</tr>
+<tr>
+<td>s2</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s3</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s4</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s5</td>
+<td>15</td>
+<td>14</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>74</td>
+</tr>
+<tr>
+<td>s6</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s7</td>
+<td>14</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>74</td>
+</tr>
+<tr>
+<td>s8</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s9</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>16</td>
+<td>76</td>
+</tr>
+<tr>
+<td>s10</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s11</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s12</td>
+<td>15</td>
+<td>14</td>
+<td>14</td>
+<td>16</td>
+<td>15</td>
+<td>74</td>
+</tr>
+<tr>
+<td>s13</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s14</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>16</td>
+<td>14</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s16</td>
+<td>14</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>74</td>
+</tr>
+<tr>
+<td>s17</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td><strong>s19</strong></td>
+<td>15</td>
+<td>16</td>
+<td>16</td>
+<td>15</td>
+<td>15</td>
+<td>77</td>
+</tr>
+<tr>
+<td><strong>s21</strong></td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td><strong>s22</strong></td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s23</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>75</td>
+</tr>
+<tr>
+<td>s24</td>
+<td>15</td>
+<td>15</td>
+<td>14</td>
+<td>15</td>
+<td>15</td>
+<td>74</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>327</strong></td>
+<td><strong>329</strong></td>
+<td><strong>329</strong></td>
+<td><strong>332</strong></td>
+<td><strong>330</strong></td>
+<td><strong>1.647</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Comparação com o artigo (1.647 gravações e 22 participantes):</strong></p>
+<ul>
+<li><strong>Gravações:</strong> o total obtido, 1.647, é igual ao do artigo.</li>
+<li><strong>Participantes:</strong> existem 22 pastas de participantes em cada atividade, e as 22 têm gravações nas cinco atividades. Não há pasta vazia. O número de pastas existentes e o de participantes com gravações coincidem, e são iguais ao valor do artigo (22).</li>
+<li><strong>Numeração:</strong> os identificadores vão até s24, mas <strong>s18 e s20 não existem</strong>. Por isso o maior identificador (24) é diferente do número de participantes (22). A lacuna é só de numeração e não indica gravações perdidas.</li>
+<li>
+<p><strong>Distribuição:</strong> o protocolo de 15 gravações por célula daria 22 × 5 × 15 = 1.650. Treze células são diferentes de 15:</p>
+<ul>
+<li>oito têm 14 gravações: s1-FA, s5-GU, s7-FA, s12-GU, s12-LD, s14-WA, s16-FA e s24-LD;</li>
+<li>cinco têm 16 gravações: s9-WA, s12-SD, s14-SD, s19-GU e s19-LD.</li>
+</ul>
+<p>A conta fecha: 1.650 − 8 + 5 = 1.647. A diferença está na distribuição, não no total.</p>
+</li>
+</ul>
+<h3>Desafios da seção 1 e como foram resolvidos</h3>
+<ol>
+<li><strong>Gravação × registro.</strong> Para não confundir os dois termos, definimos que gravação é um arquivo TXT e registro é uma linha não vazia. A tabela 1.3 conta arquivos. O inventário conta linhas.</li>
+<li><strong>Escopo.</strong> O repositório também tem <code>Breathing(experimental)</code>, arquivos NPY, modelos e <code>CMakeLists.txt</code>. O código percorre apenas <code>Datasets/Activity/{FA,GU,LD,SD,WA}</code> e aceita somente nomes no padrão <code>csi_data_&lt;números&gt;.txt</code>. Qualquer outro arquivo seria listado como ignorado. Nenhum foi encontrado.</li>
+<li><strong>Ordem dos participantes.</strong> A ordem alfabética coloca s10 antes de s2. Usamos ordenação numérica (função <code>chave_participante</code>).</li>
+<li><strong>Formato válido.</strong> Linhas vazias não contam como registro. Uma linha válida tem exatamente 129 campos convertíveis em número finito (<code>float</code> e <code>math.isfinite</code>). Quando há erro, o número da linha e o motivo ficam registrados em <code>problemas_leitura</code>.</li>
+<li><strong>Falhas de leitura.</strong> A leitura usa <code>utf-8-sig</code> (que remove um eventual BOM) e <code>errors="replace"</code>, dentro de <code>try/except</code>. Assim, um arquivo com defeito é registrado no inventário em vez de interromper a execução.</li>
+<li><strong>Diferenças em relação ao artigo.</strong> O código separa pastas existentes, participantes com gravações e participantes com as cinco atividades. Ele também lista os IDs ausentes e as células diferentes de 15 (<code>resultados/resumo_secao1.txt</code>).</li>
+<li><strong>Portabilidade.</strong> A raiz da base é configurável em <code>config.py</code> ou pela variável de ambiente <code>RAIZ_BASE_CSI</code>. O <code>caminho_txt</code> é gravado relativo à raiz, com separador <code>/</code>.</li>
+</ol>
+<hr />
+<h2>2. Selecionar as 30 gravações de análise</h2>
+<p><strong>ID da equipe:</strong> 14. <strong>Participantes da base:</strong> s19, s21 e s22.</p>
+<p>Para cada participante e atividade, o código (<code>secao2_selecao.py</code>):</p>
+<ol>
+<li>pega no inventário os TXT da pasta <code>Datasets/Activity/&lt;atividade&gt;/&lt;participante&gt;</code>;</li>
+<li>ordena os nomes em ordem crescente;</li>
+<li>escolhe os dois primeiros com <code>total_registros &gt; 0</code>, <code>registros_formato_valido = total_registros</code> e <code>problemas_leitura = nenhum</code>.</li>
+</ol>
+<p><strong>Resultado:</strong></p>
+<ul>
+<li><code>resultados/selecao_30_gravacoes.csv</code> tem 30 linhas de dados, com as colunas <code>participante</code>, <code>atividade</code>, <code>caminho_txt</code>, <code>ordem_selecao</code> e <code>n_registros</code>.</li>
+<li>As 30 gravações estão identificadas nesse CSV.</li>
+</ul>
+<p><strong>Arquivos desconsiderados, motivos e substitutos:</strong> nenhum. Os dois primeiros TXT de cada pasta eram válidos, então não houve substituição. O arquivo <code>resultados/arquivos_desconsiderados.csv</code> contém só o cabeçalho. Se houvesse descartes, cada linha registraria o arquivo, o motivo e o substituto.</p>
+<p><strong>Observação sobre s19:</strong></p>
+<ul>
+<li>Os timestamps dos nomes mostram que, em todas as atividades de s19, o <strong>1º TXT foi gravado em 28/08/2024</strong> e os demais em <strong>04/09/2024</strong> (horário UTC).</li>
+<li>Assim, as gravações de ordem 1 e 2 de s19 vêm de sessões de coleta diferentes, com uma semana de intervalo.</li>
+<li>Em s21 e s22, as duas gravações selecionadas são da mesma sessão (11/09/2024), com poucos minutos de diferença.</li>
+<li>Conforme o enunciado, a seleção não foi alterada por causa disso.</li>
+</ul>
+<hr />
+<h2>3. Calcular e visualizar as amplitudes de CSI</h2>
+<h3>3.2 Cálculo das amplitudes dos 30 arquivos</h3>
+<p>O código (<code>secao3_amplitudes.py</code>, função <code>amplitudes</code> em <code>comum.py</code>) faz o seguinte para cada linha de cada TXT selecionado:</p>
+<ol>
+<li>separa a primeira coluna, que é temporal e não entra no cálculo;</li>
+<li>agrupa os 128 valores restantes em 64 pares (imaginária, real);</li>
+<li>calcula |H| = √(Re² + Im²).</li>
+</ol>
+<p>É a mesma convenção de <code>get_amps</code> em <code>Scripts/CSI.py</code>. Cada TXT gera uma matriz <em>registros × 64</em>. O código confere esse formato contra o <code>n_registros</code> da seleção. Por exemplo, s19-FA ordem 1 tem 990 registros e gera uma matriz 990 × 64.</p>
+<h3>3.3 Verificação de uma amplitude (<code>resultados/verificacao_amplitude.txt</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>TXT</th>
+<th>Linha</th>
+<th>Par</th>
+<th>Imaginária</th>
+<th>Real</th>
+<th>Amplitude</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>csi_data_1724809062.txt</td>
+<td>1</td>
+<td>20</td>
+<td>−25</td>
+<td>14</td>
+<td>28,65</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Origem:</strong> s19, FA, <code>ordem_selecao = 1</code>.</li>
+<li><strong>Localização:</strong> a imaginária está na coluna 40 do TXT, a real na coluna 41, e a amplitude na coluna 20 da matriz.</li>
+<li><strong>Conferência:</strong> √(14² + (−25)²) = √821 = 28,65.</li>
+</ul>
+<h3>3.4–3.5 Painéis das 15 gravações de ordem_selecao = 1</h3>
+<p>São cinco painéis, um por atividade (Figuras 3.1 a 3.5, <code>resultados/figuras/secao3_painel_&lt;n&gt;_&lt;atividade&gt;.png</code>). Em cada um:</p>
+<ul>
+<li>na linha superior, as <strong>3 séries temporais</strong> da amplitude do par 20, uma por participante;</li>
+<li>na linha inferior, os <strong>3 mapas de calor</strong> dos 64 pares.</li>
+</ul>
+<p>Ao todo são 30 gráficos: 15 séries e 15 mapas. Nos dois tipos, o eixo horizontal é o índice do registro, começando em 1. Os títulos e legendas identificam o participante, a atividade e o TXT.</p>
+<p><strong>Escalas comuns:</strong></p>
+<ul>
+<li><strong>Séries temporais:</strong> o eixo vertical vai de 0 a 45 nas 15 séries.</li>
+<li><strong>Mapas de calor:</strong> a escala de cores vai de 0 a 39 nos 15 mapas. Esse limite é o percentil 99,9 de todas as amplitudes, sem o par 1.</li>
+<li><strong>Saturação:</strong> o par 1 vale cerca de 115 e é quase constante. Se ele entrasse na escala, os demais pares ficariam com cor praticamente uniforme. Por isso, valores acima de 39 aparecem saturados, o que é indicado pela seta na barra de cores.</li>
+</ul>
+<p><img alt="Figura 3.1 - FA" src="resultados/figuras/secao3_painel_1_FA.png" /></p>
+<p><img alt="Figura 3.2 - GU" src="resultados/figuras/secao3_painel_2_GU.png" /></p>
+<p><img alt="Figura 3.3 - LD" src="resultados/figuras/secao3_painel_3_LD.png" /></p>
+<p><img alt="Figura 3.4 - SD" src="resultados/figuras/secao3_painel_4_SD.png" /></p>
+<p><img alt="Figura 3.5 - WA" src="resultados/figuras/secao3_painel_5_WA.png" /></p>
+<h3>Comentários comparativos</h3>
+<p><strong>1. Mesma atividade, pessoas diferentes</strong></p>
+<ul>
+<li><strong>Padrão comum:</strong> nas cinco figuras, os três participantes têm a mesma estrutura nos mapas de calor:<ul>
+<li>faixa escura nos pares 28–38;</li>
+<li>par 1 saturado (amarelo);</li>
+<li>par 2 escuro;</li>
+<li>amplitudes moderadas nos pares 3–27 e 39–64.</li>
+</ul>
+</li>
+<li><strong>Diferenças de nível:</strong> o nível do par 20 muda bastante entre as pessoas.<ul>
+<li>Figura 3.1 (FA): as médias são 23,99 (s19), 18,88 (s21) e 16,59 (s22).</li>
+<li>A série de s19 é mais "espinhosa", com picos até 37 e quedas frequentes até 16,4.</li>
+<li>A de s21 oscila em torno de 19, sem eventos isolados.</li>
+<li>A de s22 fica em torno de 16,6, com quedas isoladas até cerca de 4–5 nos registros ≈60–100, ≈265, ≈545 e ≈875.</li>
+</ul>
+</li>
+<li><strong>s19 nas outras atividades:</strong> nas Figuras 3.2 a 3.5, s19 tem sempre o nível mais alto (médias de 26–28). No mapa de calor, isso aparece como pares 3–27 mais claros que os de s21 e s22.</li>
+<li><strong>Natureza das quedas de s19:</strong> as quedas recorrentes de s19 até 16,40 correspondem sempre ao mesmo valor bruto (Im = 13, Re = 10). O valor (13, 10) também aparece em s21 e s22, mas lá fica perto do nível médio e não se destaca. Isso indica um valor característico da medição, e não um movimento.</li>
+</ul>
+<p><strong>2. Mesma pessoa, atividades diferentes</strong></p>
+<ul>
+<li><strong>s21</strong> é o participante com mais diferença visual entre atividades:<ul>
+<li>FA (Fig. 3.1): estável em torno de 19.</li>
+<li>GU (Fig. 3.2): sobe aos poucos, com rajadas nos registros ≈400–450 e ≈720–800.</li>
+<li>LD (Fig. 3.3): estável em torno de 13, com uma pequena elevação em ≈200–300.</li>
+<li>SD (Fig. 3.4): perturbação forte nos registros ≈180–290, com mínimo de 2,24. Ela aparece em quase todos os pares do mapa: faixa vertical escura nos pares 3–27 e clara nos pares 39–50.</li>
+<li>WA (Fig. 3.5): flutuação contínua ao longo de toda a gravação.</li>
+</ul>
+</li>
+<li><strong>s22:</strong><ul>
+<li>LD (Fig. 3.3): mudança de patamar perto do registro 600, de ≈14 para ≈20, visível também no mapa.</li>
+<li>GU (Fig. 3.2): rajada nos registros ≈700–800, com pico de 34.</li>
+<li>FA, SD e WA: mais estacionárias.</li>
+</ul>
+</li>
+<li><strong>s19:</strong> as cinco atividades parecem muito semelhantes entre si (nível alto, picos e quedas recorrentes). Pela inspeção visual, é difícil distingui-las.</li>
+</ul>
+<p><strong>3. Variação durante a gravação</strong></p>
+<p>Os valores abaixo são o desvio padrão do par 20 em janelas de 100 registros (<code>resultados/estatisticas_secao3.txt</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Gravação</th>
+<th>Trecho de maior variação</th>
+<th>Trecho de menor variação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>s21-SD</td>
+<td>201–300 (dp 4,64)</td>
+<td>701–800 (dp 1,70)</td>
+</tr>
+<tr>
+<td>s21-GU</td>
+<td>401–500 (dp 3,04)</td>
+<td>101–200 (dp 1,16)</td>
+</tr>
+<tr>
+<td>s22-GU</td>
+<td>701–800 (dp 4,43)</td>
+<td>201–300 (dp 1,77)</td>
+</tr>
+<tr>
+<td>s22-FA</td>
+<td>1–100 (dp 2,83, devido às quedas isoladas)</td>
+<td>601–700 (dp 1,03)</td>
+</tr>
+<tr>
+<td>s22-LD</td>
+<td>601–700 (dp 3,09, transição de patamar)</td>
+<td>1–100 (dp 1,77)</td>
+</tr>
+</tbody>
+</table>
+<p>Nas gravações de s19, a variação é alta e parecida em todas as janelas (dp entre 2,7 e 5,4). Sem anotação, não identificamos o instante exato da queda. Os trechos citados são só os de maior variação de amplitude.</p>
+<p><strong>4. Comportamento dos pares</strong> (15 gravações juntas)</p>
+<ul>
+<li><strong>Par 1:</strong> média ≈115,3 e desvio padrão de 0,91. É praticamente constante e muito acima dos demais pares.</li>
+<li><strong>Par 2:</strong> média ≈4,0 e desvio padrão de 0,04. Também é constante.</li>
+<li><strong>Pares 30–38:</strong> média abaixo de 1, ou seja, próxima de zero.</li>
+<li><strong>Pares 28 e 29:</strong> médias de 5,6 e 2,3, uma transição para a faixa nula.</li>
+<li><strong>Coincidência com os autores:</strong> essas posições (pares 1 e 28–38) são as que os autores excluem como subportadoras nulas (<code>nulls = [0, 27, …, 37]</code> em <code>Scripts/imf_generator.py</code>, índices a partir de 0).</li>
+<li><strong>Pares 3–27 e 39–64:</strong> amplitudes úteis, de 17 a 21 em média.<ul>
+<li>Os pares das bordas da faixa nula variam mais: 25–27 e 39–41, com dp entre 6,1 e 7,9.</li>
+<li>Os pares das extremidades variam menos: 3–10 e 53–61, com dp entre 3,2 e 3,7.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2>Conclusões e limitações (seções 1 a 3)</h2>
+<ul>
+<li><strong>Base:</strong> os dados estão íntegros. São 1.647 gravações de 22 participantes, todas no formato correto, o que confere com o artigo.</li>
+<li><strong>Seleção:</strong> as 30 gravações da equipe foram escolhidas sem nenhum descarte.</li>
+<li><strong>Pares sem informação:</strong> os pares 1, 2 e 28–38 são constantes ou nulos e não trazem informação útil.</li>
+<li><strong>Variabilidade:</strong> no par 20, as diferenças de nível entre participantes e entre sessões (s19) são mais visíveis que as diferenças entre atividades.</li>
+<li><strong>Limitações:</strong><ul>
+<li>a análise visual cobre um único par e uma gravação por participante e atividade;</li>
+<li>não há anotação do instante dos movimentos;</li>
+<li>as conclusões valem só para as 15 gravações representadas nos painéis.</li>
+</ul>
+</li>
+</ul>
+<h2>Referências</h2>
+<ol>
+<li>Artigo fornecido pelo professor: <em>Tools and Methods for Achieving Wi-Fi Sensing in Embedded Devices</em>. Sensors, v. 25, n. 19, art. 6220, 2025. https://www.mdpi.com/1424-8220/25/19/6220</li>
+<li>Repositório <em>Embedded_WiFi_Sensing</em> (arquivo <code>Embedded_WiFi_Sensing-main.zip</code> fornecido pelo professor): <code>Datasets/Activity</code> e <code>Scripts/CSI.py</code>, função <code>get_amps</code>, usada como referência para o cálculo das amplitudes.</li>
+</ol></body></html>

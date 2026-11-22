@@ -1,0 +1,27 @@
+Equipe 14 - Seção 1
+Raiz da base: C:\Users\Willi\Downloads\ufam\Embedded_WiFi_Sensing-main\Embedded_WiFi_Sensing-main
+
+Gravações (TXT) inventariadas ........: 1647   (artigo: 1647)
+Pastas de participantes existentes ...: 22
+Participantes com >= 1 gravação ......: 22   (artigo: 22)
+Participantes com as 5 atividades ....: 22
+Identificadores ausentes na sequência : s18, s20
+Arquivos ignorados (fora do padrão) ..: 0
+TXT com problema de leitura/formato ..: 0
+Registros (linhas não vazias) totais .: 1623376
+Registros com formato válido .........: 1623376
+
+Células participante x atividade diferentes de 15 gravações:
+    s1 FA: 14
+    s5 GU: 14
+    s7 FA: 14
+    s9 WA: 16
+    s12 GU: 14
+    s12 LD: 14
+    s12 SD: 16
+    s14 SD: 16
+    s14 WA: 14
+    s16 FA: 14
+    s19 GU: 16
+    s19 LD: 16
+    s24 LD: 14
