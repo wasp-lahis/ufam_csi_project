@@ -1,5 +1,5 @@
 Equipe 14 - Seção 1
-Raiz da base: C:\Users\Willi\Downloads\ufam\Embedded_WiFi_Sensing-main\Embedded_WiFi_Sensing-main
+Raiz da base: C:\Users\Willi\Downloads\ufam_csi_project\Embedded_WiFi_Sensing-main\Embedded_WiFi_Sensing-main
 
 Gravações (TXT) inventariadas ........: 1647   (artigo: 1647)
 Pastas de participantes existentes ...: 22
